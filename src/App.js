@@ -26,12 +26,46 @@ const Footer = () => {
   )
 }
 
+//custom hook
+const useCounter = () => {
+  const [value, setValue] = useState(0)
+  const increase = () => {
+    setValue(value + 1)
+  }
+  const decrease = () => {
+    setValue(value - 1)
+  }
+  const zero = () => {
+    setValue(0)
+  }
+  return {
+    value,
+    increase,
+    decrease,
+    zero
+  }
+}
+
+const useField = (type) => {
+  const [value, setValue] = useState('')
+  const onChange = (event) => {
+    setValue(event.target.value)
+  }
+
+  return {
+    value,
+    onChange,
+    type
+  }
+}
+
 const App = () => {
   const [notes, setNotes] = useState([{
     content: 'Fetching notes',
     id: '1',
     important: true
   }])
+
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
@@ -161,10 +195,37 @@ const App = () => {
   const padding = { padding: '5px' }
 
   const HomePage = () => {
+
     const navigate = useNavigate()
+    const counter = useCounter()
+    const name = useField('text')
+    const born = useField('date')
+    const height = useField('number')
     return (
       <div>
         <h3>Welcome to the note app!</h3>
+        <div>
+          <div>{counter.value}</div>
+          <button onClick={() => counter.increase()}>
+            plus
+          </button>
+          <button onClick={() => counter.decrease()}>
+            minus
+          </button>
+          <button onClick={() => counter.zero()}>
+            zero
+          </button>
+        </div>
+
+        <form>
+          Name:
+          <input {...name}></input>
+          Born:
+          <input {...born}></input>
+          Height:
+          <input {...height}></input>
+        </form>
+
         <button onClick={() => navigate('/notes')}>Go to notes!</button>
       </div>
     )
