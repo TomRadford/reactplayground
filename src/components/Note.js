@@ -7,13 +7,14 @@ const Note = ({ note, toggleImportance, user }) => {
 
   const makeImportant = () => {
     if (user)
-      return ( <button onClick={toggleImportance}>{label}</button> )
+      return (<button onClick={toggleImportance}>{label}</button>)
   }
   return (
-    <li className='note'>
-      <span><Link to={`/note/${note.id}`}>{note.content}</Link> </span>
-      {makeImportant()}
-    </li>
+    <tr>
+      <td><Link to={`/note/${note.id}`}>{note.content}</Link> </td>
+      <td>{note.user.name}</td>
+      <td>{makeImportant()}</td>
+    </tr>
   )
 }
 

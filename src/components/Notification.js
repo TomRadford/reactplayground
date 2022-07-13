@@ -1,3 +1,5 @@
+import { Alert } from 'react-bootstrap'
+
 const Notification = ( { message } ) => {
 
   if (message === null) {
@@ -5,8 +7,8 @@ const Notification = ( { message } ) => {
   }
 
   return (
-    <div className="error">
-      {message}
+    <div className="container">
+      <Alert variant='primary'>{message}</Alert>
     </div>
   )
 }

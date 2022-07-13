@@ -7,6 +7,7 @@ import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import NoteForm from './components/NoteForm'
 import Togglable from './components/Togglable'
+import { Nav, Navbar, Table } from 'react-bootstrap'
 import {
   Routes, Route, Link, Navigate, useNavigate, useMatch
 } from 'react-router-dom'
@@ -60,16 +61,11 @@ const useField = (type) => {
 }
 
 const App = () => {
-  const [notes, setNotes] = useState([{
-    content: 'Fetching notes',
-    id: '1',
-    important: true
-  }])
+  const [notes, setNotes] = useState([])
 
   const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
-
+  const [message, setMessage] = useState(null)
   const noteFormRef = useRef()
 
   useEffect(() => {
@@ -100,12 +96,15 @@ const App = () => {
       window.localStorage.setItem(
         'loggedNotappUser', JSON.stringify(user))
       setUser(user)
-
+      setMessage(`Welcome ${user.name}`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     } catch (exception) {
       // console.log(exception)
-      setErrorMessage('Wrong credentials')
+      setMessage('Wrong credentials')
       setTimeout(() => {
-        setErrorMessage(null)
+        setMessage(null)
       }, 5000)
 
     }
@@ -123,6 +122,7 @@ const App = () => {
 
   const toggleImportanceOf = (id) => {
     const note = notes.find(note => note.id === id)
+    console.log(note)
     const changedNote = { ...note, important: !note.important }
 
     noteService
@@ -133,11 +133,11 @@ const App = () => {
             : returnedNote))
       })
       .catch(() => {
-        setErrorMessage(
+        setMessage(
           `Note: ${note.content} was already deleted from the server`
         )
         setTimeout(() => {
-          setErrorMessage(null)
+          setMessage(null)
         }, 5000)
         setNotes(notes.filter(n => n.id !== id))
       })
@@ -170,15 +170,17 @@ const App = () => {
           show {showAll ? 'important' : 'all'}
         </button>
       </div>
-      <ul>
-        {notesToShow.map(note =>
-          <Note key={note.id}
-            note={note}
-            toggleImportance={() => toggleImportanceOf(note.id)}
-            user={user}
-          />
-        )}
-      </ul>
+      <Table striped>
+        <tbody>
+          {notesToShow.map(note =>
+            <Note key={note.id}
+              note={note}
+              toggleImportance={() => toggleImportanceOf(note.id)}
+              user={user}
+            />
+          )}
+        </tbody>
+      </Table>
     </div>
   )
 
@@ -232,31 +234,32 @@ const App = () => {
   }
 
   return (
-    <div>
-      <div style={{ marginBottom: '10px' }}>
-        <Link style={padding} to="/">Home</Link>
-        <Link style={padding} to="/notes">Notes</Link>
-        <Link style={padding} to="/users">Users</Link>
-        {user
-          ?
-          <div style={{ display: 'inline-block' }}>
-            <em>{user.name}  is logged in </em>
-            <button onClick={() => {
-              window.localStorage.removeItem('loggedNotappUser')
-              setUser(null)
-              noteService.setToken(null)
-            }
-            }>Log out</button>
-          </div>
-          :
-          <div style={{ display: 'inline-block' }}>
-            <Link style={padding} to="/login">Login</Link>
-          </div>
-        }
-      </div>
+    <div className='container'>
+      <Navbar collapseOnSelect expand="lg">
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" >
+          <Navbar.Collapse id="responsive-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link href="#" as="span">
+                <Link style={padding} to="/">Home</Link>
+              </Nav.Link>
+              <Nav.Link href="#" as="span">
+                <Link style={padding} to="/notes">Notes</Link>
+              </Nav.Link>
+              <Nav.Link href="#" as="span">
+                <Link style={padding} to="/users">Users</Link>
+              </Nav.Link>
+              <Nav.Link href="#" as="span">
+                {user ? <em style={padding}>{user.name} is logged in!</em>
+                  : <Link style={padding} to="/login">login</Link>
+                }
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar.Toggle>
+      </Navbar>
 
+      <Notification message={message} />
 
-      <Notification message={errorMessage} />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/notes" element={<Notes />} />
