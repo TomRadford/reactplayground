@@ -1,4 +1,4 @@
-import { Alert } from 'react-bootstrap'
+import { Alert } from '@mui/material'
 
 const Notification = ( { message } ) => {
 
@@ -7,9 +7,7 @@ const Notification = ( { message } ) => {
   }
 
   return (
-    <div className="container">
-      <Alert variant='primary'>{message}</Alert>
-    </div>
+    <Alert severity='info'>{message}</Alert>
   )
 }
 

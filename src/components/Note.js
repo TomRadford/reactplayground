@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { TableRow, TableCell } from '@mui/material'
 
 const Note = ({ note, toggleImportance, user }) => {
   const label = note.important
@@ -10,11 +11,11 @@ const Note = ({ note, toggleImportance, user }) => {
       return (<button onClick={toggleImportance}>{label}</button>)
   }
   return (
-    <tr>
-      <td><Link to={`/note/${note.id}`}>{note.content}</Link> </td>
-      <td>{note.user.name}</td>
-      <td>{makeImportant()}</td>
-    </tr>
+    <TableRow>
+      <TableCell><Link to={`/note/${note.id}`}>{note.content}</Link> </TableCell>
+      <TableCell>{note.user.name}</TableCell>
+      <TableCell>{makeImportant()}</TableCell>
+    </TableRow>
   )
 }
 

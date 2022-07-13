@@ -7,22 +7,41 @@ import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import NoteForm from './components/NoteForm'
 import Togglable from './components/Togglable'
-import { Nav, Navbar, Table } from 'react-bootstrap'
 import {
-  Routes, Route, Link, Navigate, useNavigate, useMatch
+  Container,
+  TableBody,
+  TableContainer,
+  Table,
+  Paper,
+  AppBar,
+  Button,
+  Toolbar,
+  IconButton
+} from '@mui/material'
+import {
+  Routes,
+  Route,
+  Link,
+  Navigate,
+  useNavigate,
+  useMatch,
 } from 'react-router-dom'
+import { ButtonSC, InputSC } from './components/StyledComponents'
 
 const Footer = () => {
   const footerStyle = {
     color: 'green',
     fontStyle: 'italic',
-    fontSize: 16
+    fontSize: 16,
   }
   const d = new Date()
   return (
     <div style={footerStyle}>
       <br />
-      <em>Note app, Department of Computer Science, University of Helsinki {d.getFullYear()}</em>
+      <em>
+        Note app, Department of Computer Science, University of Helsinki{' '}
+        {d.getFullYear()}
+      </em>
     </div>
   )
 }
@@ -43,7 +62,7 @@ const useCounter = () => {
     value,
     increase,
     decrease,
-    zero
+    zero,
   }
 }
 
@@ -56,7 +75,7 @@ const useField = (type) => {
   return {
     value,
     onChange,
-    type
+    type,
   }
 }
 
@@ -70,10 +89,9 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    noteService.getAll()
-      .then(initialNotes => {
-        setNotes(initialNotes)
-      })
+    noteService.getAll().then((initialNotes) => {
+      setNotes(initialNotes)
+    })
   }, [])
 
   useEffect(() => {
@@ -83,7 +101,6 @@ const App = () => {
       setUser(user)
       noteService.setToken(user.token)
     }
-
   }, [])
 
   console.log('render', notes.length, 'notes')
@@ -93,8 +110,7 @@ const App = () => {
       // console.log(await loginService.getAllUsers())
       const user = await loginService.login(userObject)
       noteService.setToken(user.token)
-      window.localStorage.setItem(
-        'loggedNotappUser', JSON.stringify(user))
+      window.localStorage.setItem('loggedNotappUser', JSON.stringify(user))
       setUser(user)
       setMessage(`Welcome ${user.name}`)
       setTimeout(() => {
@@ -106,98 +122,82 @@ const App = () => {
       setTimeout(() => {
         setMessage(null)
       }, 5000)
-
     }
   }
 
-
   const createNote = (noteObject) => {
     noteFormRef.current.toggleVisibility()
-    noteService
-      .create(noteObject)
-      .then(returnedNote => {
-        setNotes(notes.concat(returnedNote))
-      })
+    noteService.create(noteObject).then((returnedNote) => {
+      setNotes(notes.concat(returnedNote))
+    })
   }
 
   const toggleImportanceOf = (id) => {
-    const note = notes.find(note => note.id === id)
+    const note = notes.find((note) => note.id === id)
     console.log(note)
     const changedNote = { ...note, important: !note.important }
 
     noteService
-      .update(id, changedNote).then(returnedNote => {
-        setNotes(notes.map(note =>
-          note.id !== id
-            ? note
-            : returnedNote))
+      .update(id, changedNote)
+      .then((returnedNote) => {
+        setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)))
       })
       .catch(() => {
-        setMessage(
-          `Note: ${note.content} was already deleted from the server`
-        )
+        setMessage(`Note: ${note.content} was already deleted from the server`)
         setTimeout(() => {
           setMessage(null)
         }, 5000)
-        setNotes(notes.filter(n => n.id !== id))
+        setNotes(notes.filter((n) => n.id !== id))
       })
   }
 
-  const notesToShow = showAll
-    ? notes
-    : notes.filter(note => note.important)
+  const notesToShow = showAll ? notes : notes.filter((note) => note.important)
 
   const match = useMatch('/note/:id')
-  const note = match
-    ? notes.find(note => note.id === match.params.id)
-    : null
+  const note = match ? notes.find((note) => note.id === match.params.id) : null
   const noteForm = () => (
-    <Togglable buttonLabel='Add a note' ref={noteFormRef}>
-      <NoteForm
-        createNote={createNote}
-      />
-    </Togglable >
+    <Togglable buttonLabel="Add a note" ref={noteFormRef}>
+      <NoteForm createNote={createNote} />
+    </Togglable>
   )
-
 
   const Notes = () => (
     <div>
       <h1>Notes</h1>
-      {user !== null && noteForm()
-      }
+      {user !== null && noteForm()}
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all'}
         </button>
       </div>
-      <Table striped>
-        <tbody>
-          {notesToShow.map(note =>
-            <Note key={note.id}
-              note={note}
-              toggleImportance={() => toggleImportanceOf(note.id)}
-              user={user}
-            />
-          )}
-        </tbody>
-      </Table>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+            {notesToShow.map((note) => (
+              <Note
+                key={note.id}
+                note={note}
+                toggleImportance={() => toggleImportanceOf(note.id)}
+                user={user}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   )
 
   const Login = () => (
     <div>
-      <Togglable buttonLabel='login' >
-        <LoginForm
-          createLogin={createLogin}
-        />
-      </Togglable >
+      <Togglable buttonLabel="login">
+        <LoginForm createLogin={createLogin} />
+      </Togglable>
     </div>
   )
 
-  const padding = { padding: '5px' }
+  // const padding = { padding: '5px' }
 
   const HomePage = () => {
-
     const navigate = useNavigate()
     const counter = useCounter()
     const name = useField('text')
@@ -208,24 +208,18 @@ const App = () => {
         <h3>Welcome to the note app!</h3>
         <div>
           <div>{counter.value}</div>
-          <button onClick={() => counter.increase()}>
-            plus
-          </button>
-          <button onClick={() => counter.decrease()}>
-            minus
-          </button>
-          <button onClick={() => counter.zero()}>
-            zero
-          </button>
+          <ButtonSC onClick={() => counter.increase()}>plus</ButtonSC>
+          <ButtonSC onClick={() => counter.decrease()}>minus</ButtonSC>
+          <ButtonSC onClick={() => counter.zero()}>zero</ButtonSC>
         </div>
 
         <form>
           Name:
-          <input {...name}></input>
+          <InputSC {...name}></InputSC>
           Born:
-          <input {...born}></input>
+          <InputSC {...born}></InputSC>
           Height:
-          <input {...height}></input>
+          <InputSC {...height}></InputSC>
         </form>
 
         <button onClick={() => navigate('/notes')}>Go to notes!</button>
@@ -234,44 +228,55 @@ const App = () => {
   }
 
   return (
-    <div className='container'>
-      <Navbar collapseOnSelect expand="lg">
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" >
-          <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="#" as="span">
-                <Link style={padding} to="/">Home</Link>
-              </Nav.Link>
-              <Nav.Link href="#" as="span">
-                <Link style={padding} to="/notes">Notes</Link>
-              </Nav.Link>
-              <Nav.Link href="#" as="span">
-                <Link style={padding} to="/users">Users</Link>
-              </Nav.Link>
-              <Nav.Link href="#" as="span">
-                {user ? <em style={padding}>{user.name} is logged in!</em>
-                  : <Link style={padding} to="/login">login</Link>
-                }
-              </Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar.Toggle>
-      </Navbar>
+    <Container>
+      <AppBar>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+          ></IconButton>
+          <Button color="inherit" component={Link} to="/">
+            Home
+          </Button>
+          <Button color="inherit" component={Link} to="/notes">
+            Notes
+          </Button>
+          <Button color="inherit" component={Link} to="/users">
+            Users
+          </Button>
+          {user ? (
+            <em>{user.name} is logged in!</em>
+          ) : (
+            <Button color="inherit" component={Link} to="/login">login</Button>
+          )}
+        </Toolbar>
+      </AppBar>
 
       <Notification message={message} />
 
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/notes" element={<Notes />} />
-        <Route path="/users" element={user ? <div>user list to go here</div>
-          : <Navigate replace to='/login' />} />
-        <Route path="/login" element={user ? <Navigate replace to="/" /> : <Login />} />
-        <Route path='/note/:id' element={<NotePage note={note} />} />
+        <Route
+          path="/users"
+          element={
+            user ? (
+              <div>user list to go here</div>
+            ) : (
+              <Navigate replace to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/login"
+          element={user ? <Navigate replace to="/" /> : <Login />}
+        />
+        <Route path="/note/:id" element={<NotePage note={note} />} />
       </Routes>
 
       <Footer />
-    </div >
-
+    </Container>
   )
 }
 

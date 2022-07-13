@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { Button, Form } from 'react-bootstrap'
+import { TextField, Button } from '@mui/material'
 
 const LoginForm = ({ createLogin }) => {
-
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const addLogin = event => {
+  const addLogin = (event) => {
     event.preventDefault()
     const userObject = { username, password }
     createLogin(userObject)
@@ -18,29 +17,31 @@ const LoginForm = ({ createLogin }) => {
     <div>
       <h2>Login</h2>
 
-      <Form onSubmit={addLogin}>
-        <Form.Group>
-          <Form.Label>Username</Form.Label>
-          <Form.Control
-            type="text"
-            name="Username"
+      <form onSubmit={addLogin}>
+        <div>
+          <TextField
+            label="Username"
             id="username"
             value={username}
             onChange={({ target }) => {
               setUsername(target.value)
             }}
           />
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
+        </div>
+        <div>
+          <TextField label="password"
             name="Password"
             id="password"
             value={password}
             onChange={({ target }) => setPassword(target.value)}
           />
-          <Button variant='primary' type='submit'>login</Button>
-        </Form.Group>
-      </Form>
+        </div>
+        <div>
+          <Button variant="primary" type="submit">
+            login
+          </Button>
+        </div>
+      </form>
     </div>
   )
 }
